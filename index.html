@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BlackJACK 4x4 - Cemil Hocam Global 5</title>
+    <style>
+        body { background-color: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: sans-serif; overflow: hidden; touch-action: manipulation; }
+        .phone { width: 100%; max-width: 360px; height: 100vh; max-height: 640px; background: radial-gradient(circle, #1a5d1a 0%, #0a3d0a 100%); border: 8px solid #333; border-radius: 40px; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
+        .header-area { height: 25%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-top: 10px; }
+        .deck-box { width: 80px; height: 110px; background: linear-gradient(135deg, #c0392b, #8e44ad); border: 3px solid white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; color: white; font-size: 40px; cursor: pointer; z-index: 10; }
+        .restart-btn { width: 100px; height: 110px; padding: 5px; font-size: 14px; background: gold; border: 3px solid white; border-radius: 10px; cursor: pointer; display: none; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.4); position: absolute; z-index: 50; text-align: center; }
+        .info-btn { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; position: absolute; right: 45px; top: 40%; font-style: italic; font-family: serif; z-index: 20; }
+        .score-area { height: 10%; display: flex; align-items: center; justify-content: center; width: 100%; }
+        .total-score { color: #f1c40f; font-size: 28px; font-weight: bold; text-shadow: 2px 2px 4px #000; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 15px; }
+        .center-action-area { height: 25%; width: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .static-pattern { width: 60px; height: 60px; background: rgba(255, 215, 0, 0.1); border: 2px solid gold; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .static-pattern::after { content: "♠♥♣♦"; color: gold; font-weight: bold; font-size: 16px; }
+        .leaderboard { width: 100%; background: rgba(0,0,0,0.85); border-radius: 10px; padding: 10px; color: gold; display: none; border: 1px solid gold; box-shadow: 0 0 20px rgba(0,0,0,0.5); position: absolute; z-index: 60; }
+        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 90; border-radius: 40px; }
+        .modal { position: absolute; top: 5%; left: 50%; transform: translateX(-50%); width: 85%; background: rgba(10, 61, 10, 0.98); border: 3px solid gold; border-radius: 20px; padding: 15px; color: white; z-index: 100; box-shadow: 0 0 40px rgba(0,0,0,1); text-align: center; }
+        .game-title-frame { border: 2px solid gold; padding: 4px 15px; border-radius: 12px; background: rgba(0,0,0,0.5); color: gold; font-weight: bold; font-size: 14px; letter-spacing: 2px; margin-bottom: 10px; }
+        .slots { width: 100%; display: flex; justify-content: space-around; padding: 0 5px; box-sizing: border-box; }
+        .slot { width: 22%; height: 115px; border: 2px dashed rgba(255,255,255,0.3); border-radius: 10px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 5px; color: white; cursor: pointer; }
+        .mult-tag { font-size: 9px; color: gold; margin-bottom: 2px; font-weight: bold; }
+        .suit-icon { font-size: 35px; line-height: 1; margin-bottom: 2px; pointer-events: none; }
+        .slot-score { font-size: 24px; font-weight: bold; pointer-events: none; }
+        .bust-x { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.8); display: none; justify-content: center; align-items: center; font-size: 40px; font-weight: bold; border-radius: 8px; color: white; z-index: 2; }
+        .perfect-21 { border: 3px solid gold !important; background: rgba(255, 215, 0, 0.2); }
+        .closed-slot { border: 3px solid red !important; opacity: 1 !important; }
+        .flying-card { position: absolute; width: 60px; height: 90px; background: white; border-radius: 8px; z-index: 150; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; border: 2px solid #333; transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); pointer-events: none; }
+        .star-fx { position: absolute; color: gold; font-size: 30px; animation: starUp 1s ease-out forwards; z-index: 200; pointer-events: none; }
+        @keyframes starUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
+        .signature { margin-top: auto; margin-bottom: 15px; color: #fff; font-size: 16px; font-weight: 900; text-shadow: 2px 2px 4px #000; }
+        .rank-item { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+</head>
+<body onclick="bodyKapat(event)">
+<div class="phone" id="gameArea">
+    <div class="header-area">
+        <div class="deck-box" id="deck" onclick="kartCek()">?</div>
+        <button class="restart-btn" id="restartBtn" onclick="sifirlaHemen()">YENİDEN<br>BAŞLA</button>
+        <div class="info-btn" onclick="modalAc(event)">i</div>
+        <p id="deckLabel" style="color: white; font-size: 10px; margin-top: 5px;">TIKLA ÇEK</p>
+    </div>
+    <div class="score-area"><div class="total-score" id="toplam">PUAN: 0</div></div>
+    <div class="center-action-area">
+        <div class="static-pattern" id="pattern"></div>
+        <div class="leaderboard" id="scoreBoard">
+            <h3 style="margin:2px; font-size:12px; text-align:center;">DÜNYA REKORLARI (İLK 5)</h3>
+            <div id="globalScores"></div>
+            <h3 style="margin:8px 2px 2px; font-size:12px; text-align:center; border-top:1px solid gold; padding-top:4px;">KİŞİSEL REKORLAR</h3>
+            <div id="scoresList"></div>
+        </div>
+        <div class="modal-overlay" id="modalOverlay" onclick="modalKapat()">
+            <div class="modal" id="infoModal" onclick="event.stopPropagation()">
+                <h3 style="color:gold; margin-top:0; border-bottom:1px solid gold; padding-bottom:5px;">PUANLAMA</h3>
+                <div style="font-size:12px; line-height:1.4;">
+                    ♠ Maça: x4 | ♥ Kupa: x3<br>
+                    ♣ Sinek: x2 | ♦ Karo: x1<br>
+                    <br>
+                    21 Bonus: +50 | 20 Bonus: +20<br>
+                    <br>
+                    <p style="color:gold; margin-bottom:2px;">FİNAL BONUSU:</p>
+                    <p style="color:white; margin:0;">Toplam puanınıza göre her 50 puanlık dilimde bonus (10, 20, 40...) katlanarak eklenir!</p>
+                    <br>
+                    <p style="color:gold; margin-bottom:2px;">ÖNEMLİ KURAL:</p>
+                    <p style="color:white; padding:0 5px;">Dilediğiniz an bölge üzerine dokunarak sayınızı sabitleyip o gruba kağıt gelişini durdurabilirsiniz.</p>
+                </div>
+                <button onclick="modalKapat()" style="background:gold; border:none; padding:8px 20px; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:10px;">ANLADIM</button>
+            </div>
+        </div>
+    </div>
+    <div class="game-title-frame">BlackJACK 4x4</div>
+    <div class="slots">
+        <div class="slot" id="maca" onclick="slotKapat('maca')"><span class="mult-tag">x4</span><span class="suit-icon">♠</span><span class="slot-score">0</span><div class="bust-x">X</div></div>
+        <div class="slot" id="kupa" onclick="slotKapat('kupa')"><span class="mult-tag">x3</span><span class="suit-icon" style="color:#e74c3c;">♥</span><span class="slot-score">0</span><div class="bust-x">X</div></div>
+        <div class="slot" id="sinek" onclick="slotKapat('sinek')"><span class="mult-tag">x2</span><span class="suit-icon">♣</span><span class="slot-score">0</span><div class="bust-x">X</div></div>
+        <div class="slot" id="karo" onclick="slotKapat('karo')"><span class="mult-tag">x1</span><span class="suit-icon" style="color:#e74c3c;">♦</span><span class="slot-score">0</span><div class="bust-x">X</div></div>
+    </div>
+    <div class="signature">A.C.Dikili & Gemini.AI</div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBbtvGBl8m1x8thDlsUUutvujedIBCC4PA",
+        authDomain: "blackjack-4x4.firebaseapp.com",
+        databaseURL: "https://blackjack-4x4-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "blackjack-4x4",
+        storageBucket: "blackjack-4x4.firebasestorage.app",
+        messagingSenderId: "805180924640",
+        appId: "1:805180924640:web:c7da5f8c037b7ff5c26685"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const mults = { maca: 4, kupa: 3, sinek: 2, karo: 1 };
+    let tPuan = 0, sPuan = {maca:0,kupa:0,sinek:0,karo:0}, aktif = {maca:true,kupa:true,sinek:true,karo:true}, isAnim = false;
+    let localRecords = JSON.parse(localStorage.getItem('bj4x4_rekorlar')) || [];
+    let worldScores = [];
+
+    db.ref('worldScores').orderByChild('puan').limitToLast(5).on('value', (snap) => {
+        worldScores = [];
+        snap.forEach(c => { worldScores.unshift(c.val()); });
+    });
+
+    function sesCal(t) {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination);
+        if(t==='v'){ o.frequency.setValueAtTime(200, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime+0.5); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.5); o.start(); o.stop(audioCtx.currentTime+0.5); }
+        else if(t==='21') { [0, 0.2, 0.4].forEach(d => { const o2 = audioCtx.createOscillator(), g2 = audioCtx.createGain(); o2.connect(g2); g2.connect(audioCtx.destination); o2.frequency.setValueAtTime(600, audioCtx.currentTime + d); g2.gain.setValueAtTime(0.1, audioCtx.currentTime + d); g2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+d+0.15); o2.start(audioCtx.currentTime+d); o2.stop(audioCtx.currentTime+d+0.15); }); }
+        else { o.type='triangle'; g.gain.linearRampToValueAtTime(0, audioCtx.currentTime+0.1); o.start(); o.stop(audioCtx.currentTime+0.1); }
+    }
+
+    function kartCek() { if(isAnim) return; const m = Object.keys(aktif).filter(s => aktif[s]); if(!m.length) return; isAnim=true; sesCal('v'); const s = m[Math.floor(Math.random()*m.length)], d = Math.floor(Math.random()*13)+1; anim(s, d); }
+    
+    function anim(s, d) {
+        const ga = document.getElementById('gameArea'), card = document.createElement('div'), dr = document.getElementById('deck').getBoundingClientRect(), ar = ga.getBoundingClientRect();
+        card.className = 'flying-card'; card.innerHTML = fmt(d, s); if(s==='kupa'||s==='karo') card.style.color='red';
+        card.style.left = (dr.left - ar.left) + 'px'; card.style.top = (dr.top - ar.top) + 'px'; ga.appendChild(card);
+        setTimeout(() => { const tr = document.getElementById(s).getBoundingClientRect(); card.style.left = (tr.left - ar.left + 5) + 'px'; card.style.top = (tr.top - ar.top + 5) + 'px'; card.style.transform = 'scale(0.8)';
+            setTimeout(() => { card.remove(); sesCal('t'); guncelle(s, d); isAnim=false; }, 600);
+        }, 50);
+    }
+
+    function starPop(s) {
+        const ga = document.getElementById('gameArea'), sl = document.getElementById(s).getBoundingClientRect(), ar = ga.getBoundingClientRect();
+        const star = document.createElement('div'); star.className = 'star-fx'; star.innerText = '⭐';
+        star.style.left = (sl.left - ar.left + 20) + 'px'; star.style.top = (sl.top - ar.top) + 'px';
+        ga.appendChild(star); setTimeout(() => star.remove(), 1000);
+    }
+
+    function fmt(d, s) { const sym = {maca:'♠',kupa:'♥',sinek:'♣',karo:'♦'}; let n = d===1?'A':d===11?'J':d===12?'Q':d===13?'K':d; return n + sym[s]; }
+
+    function guncelle(s, d) {
+        let e = d>10?10:d; if(d===1) e = sPuan[s]+11<=21?11:1;
+        sPuan[s]+=e; tPuan+=(e*mults[s]);
+        const el = document.getElementById(s); el.querySelector('.slot-score').innerText = sPuan[s];
+        if(sPuan[s] === 21) { aktif[s]=false; tPuan+=(50*mults[s]); sesCal('21'); starPop(s); el.classList.add('perfect-21', 'closed-slot'); }
+        else if(sPuan[s] === 20) { tPuan+=(20*mults[s]); el.classList.add('perfect-21'); }
+        else if(sPuan[s] > 21) { tPuan-=(sPuan[s]*mults[s]); sPuan[s]=0; aktif[s]=false; el.classList.add('closed-slot'); el.querySelector('.bust-x').style.display='flex'; el.querySelector('.slot-score').innerText='0'; }
+        document.getElementById('toplam').innerText = 'PUAN: ' + tPuan;
+        if(Object.values(aktif).every(v => !v)) bitti();
+    }
+
+    function slotKapat(s) { if(aktif[s] && !isAnim) { aktif[s]=false; document.getElementById(s).classList.add('closed-slot'); if(Object.values(aktif).every(v => !v)) bitti(); } }
+    function modalAc(e) { e.stopPropagation(); document.getElementById('modalOverlay').style.display = 'block'; }
+    function modalKapat() { document.getElementById('modalOverlay').style.display = 'none'; }
+    function bodyKapat(e) { if(document.getElementById('modalOverlay').style.display === 'block') modalKapat(); }
+
+    function bitti() { 
+        let bonus = 0; if(tPuan >= 50) { let dilim = Math.min(Math.floor(tPuan / 50), 10); bonus = 10 * Math.pow(2, dilim - 1); }
+        tPuan += bonus; document.getElementById('toplam').innerText = 'TOPLAM: ' + tPuan;
+        
+        const minWorld = worldScores.length < 5 ? 0 : worldScores[4].puan;
+        if (tPuan > minWorld && tPuan > 0) {
+            setTimeout(() => {
+                const isim = prompt("TEBRİKLER! DÜNYA REKORLARINA GİRDİNİZ.\nLütfen isminizi yazın:", "Misafir");
+                if (isim) db.ref('worldScores').push({ isim: isim, puan: tPuan });
+            }, 500);
+        }
+
+        rekorKaydet(tPuan); tabloGoster(); 
+        document.getElementById('deck').style.visibility='hidden'; document.getElementById('restartBtn').style.display='block';
+    }
+    
+    function rekorKaydet(p) { localRecords.push(p); localRecords.sort((a,b)=>b-a); localRecords = localRecords.slice(0, 3); localStorage.setItem('bj4x4_rekorlar', JSON.stringify(localRecords)); }
+    
+    function tabloGoster() { 
+        const gList = document.getElementById('globalScores');
+        gList.innerHTML = worldScores.map((item, i) => `<div class="rank-item"><span>${i+1}. ${item.isim || '??'}</span><span>${item.puan}</span></div>`).join('');
+        const lList = document.getElementById('scoresList');
+        lList.innerHTML = localRecords.map((s, i) => `<div class="rank-item"><span>${i+1}. Rekor</span><span>${s}</span></div>`).join('');
+        document.getElementById('scoreBoard').style.display = 'block'; 
+        document.getElementById('pattern').style.display = 'none';
+    }
+
+    function sifirlaHemen() { 
+        tPuan=0; sPuan={maca:0,kupa:0,sinek:0,karo:0}; aktif={maca:true,kupa:true,sinek:true,karo:true}; 
+        document.getElementById('toplam').innerText='PUAN: 0'; document.getElementById('restartBtn').style.display='none'; 
+        document.getElementById('deck').style.visibility='visible'; document.getElementById('scoreBoard').style.display='none';
+        document.getElementById('pattern').style.display='flex';
+        document.querySelectorAll('.slot').forEach(el => { el.classList.remove('perfect-21', 'closed-slot'); el.querySelector('.bust-x').style.display='none'; el.querySelector('.slot-score').innerText='0'; });
+    }
+</script>
+</body>
+</html>
