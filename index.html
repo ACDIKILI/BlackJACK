@@ -3,16 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BlackJACK 4x4 - Cemil Hocam Global 5</title>
+    <title>BlackJACK 4x4 - Kariyer Sistemi</title>
     <style>
         body { background-color: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: sans-serif; overflow: hidden; touch-action: manipulation; }
         .phone { width: 100%; max-width: 360px; height: 100vh; max-height: 640px; background: radial-gradient(circle, #1a5d1a 0%, #0a3d0a 100%); border: 8px solid #333; border-radius: 40px; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
+        
+        /* GİRİŞ EKRANI */
+        #loginScreen { position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; border-radius: 35px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: gold; text-align: center; padding: 20px; box-sizing: border-box; }
+        #loginScreen input { background: #333; border: 2px solid gold; color: white; padding: 12px; border-radius: 10px; font-size: 18px; width: 80%; text-transform: uppercase; margin: 15px 0; }
+        #loginScreen button { background: gold; color: black; border: none; padding: 12px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
+
         .header-area { height: 25%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-top: 10px; }
         .deck-box { width: 80px; height: 110px; background: linear-gradient(135deg, #c0392b, #8e44ad); border: 3px solid white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; color: white; font-size: 40px; cursor: pointer; z-index: 10; }
         .restart-btn { width: 100px; height: 110px; padding: 5px; font-size: 14px; background: gold; border: 3px solid white; border-radius: 10px; cursor: pointer; display: none; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.4); position: absolute; z-index: 50; text-align: center; }
         .info-btn { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; position: absolute; right: 45px; top: 40%; font-style: italic; font-family: serif; z-index: 20; }
-        .score-area { height: 10%; display: flex; align-items: center; justify-content: center; width: 100%; }
+        .score-area { height: 10%; display: flex; align-items: center; justify-content: center; width: 100%; flex-direction: column; }
         .total-score { color: #f1c40f; font-size: 28px; font-weight: bold; text-shadow: 2px 2px 4px #000; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 15px; }
+        .user-tag { color: white; font-size: 12px; margin-top: 5px; text-shadow: 1px 1px 2px #000; }
         .center-action-area { height: 25%; width: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .static-pattern { width: 60px; height: 60px; background: rgba(255, 215, 0, 0.1); border: 2px solid gold; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
         .static-pattern::after { content: "♠♥♣♦"; color: gold; font-weight: bold; font-size: 16px; }
@@ -38,21 +45,30 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 <body onclick="bodyKapat(event)">
+
+<div id="loginScreen">
+    <h2 style="margin-bottom:5px;">BlackJACK 4x4</h2>
+    <p style="font-size:12px; color:white;">Lütfen İsminizi Girin (A-Z)</p>
+    <input type="text" id="playerName" placeholder="OYUNCU İSMİ" maxlength="15">
+    <button onclick="kayitOl()">OYUNA BAŞLA</button>
+</div>
+
 <div class="phone" id="gameArea">
     <div class="header-area">
         <div class="deck-box" id="deck" onclick="kartCek()">?</div>
-        <button class="restart-btn" id="restartBtn" onclick="sifirlaHemen()">YENİDEN<br>BAŞLA</button>
+        <button class="restart-btn" id="restartBtn" onclick="sifirlaHemen()">TEKRAR<br>DAĞIT</button>
         <div class="info-btn" onclick="modalAc(event)">i</div>
         <p id="deckLabel" style="color: white; font-size: 10px; margin-top: 5px;">TIKLA ÇEK</p>
     </div>
-    <div class="score-area"><div class="total-score" id="toplam">PUAN: 0</div></div>
+    <div class="score-area">
+        <div class="total-score" id="toplam">PUAN: 0</div>
+        <div class="user-tag" id="userTag">KARİYER: 0</div>
+    </div>
     <div class="center-action-area">
         <div class="static-pattern" id="pattern"></div>
         <div class="leaderboard" id="scoreBoard">
-            <h3 style="margin:2px; font-size:12px; text-align:center;">DÜNYA REKORLARI (İLK 5)</h3>
+            <h3 style="margin:2px; font-size:12px; text-align:center;">DÜNYA KLASMANI (KARİYER)</h3>
             <div id="globalScores"></div>
-            <h3 style="margin:8px 2px 2px; font-size:12px; text-align:center; border-top:1px solid gold; padding-top:4px;">KİŞİSEL REKORLAR</h3>
-            <div id="scoresList"></div>
         </div>
         <div class="modal-overlay" id="modalOverlay" onclick="modalKapat()">
             <div class="modal" id="infoModal" onclick="event.stopPropagation()">
@@ -63,11 +79,8 @@
                     <br>
                     21 Bonus: +50 | 20 Bonus: +20<br>
                     <br>
-                    <p style="color:gold; margin-bottom:2px;">FİNAL BONUSU:</p>
-                    <p style="color:white; margin:0;">Toplam puanınıza göre her 50 puanlık dilimde bonus (10, 20, 40...) katlanarak eklenir!</p>
-                    <br>
                     <p style="color:gold; margin-bottom:2px;">ÖNEMLİ KURAL:</p>
-                    <p style="color:white; padding:0 5px;">Dilediğiniz an bölge üzerine dokunarak sayınızı sabitleyip o gruba kağıt gelişini durdurabilirsiniz.</p>
+                    <p style="color:white; padding:0 5px;">21 olan bölgeler otomatik kilitlenir. Dilediğiniz an bölgeye basarak kart gelişini siz de durdurabilirsiniz.</p>
                 </div>
                 <button onclick="modalKapat()" style="background:gold; border:none; padding:8px 20px; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:10px;">ANLADIM</button>
             </div>
@@ -99,13 +112,51 @@
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const mults = { maca: 4, kupa: 3, sinek: 2, karo: 1 };
     let tPuan = 0, sPuan = {maca:0,kupa:0,sinek:0,karo:0}, aktif = {maca:true,kupa:true,sinek:true,karo:true}, isAnim = false;
-    let localRecords = JSON.parse(localStorage.getItem('bj4x4_rekorlar')) || [];
-    let worldScores = [];
+    let worldScores = [], currentUser = null, userCareerPuan = 0;
 
-    db.ref('worldScores').orderByChild('puan').limitToLast(5).on('value', (snap) => {
-        worldScores = [];
-        snap.forEach(c => { worldScores.unshift(c.val()); });
-    });
+    // KARİYER SİSTEMİ KAYIT VE KONTROL
+    function kayitOl() {
+        let isimInput = document.getElementById('playerName').value.trim().toUpperCase();
+        isimInput = isimInput.replace(/[^A-Z]/g, ''); // Sadece İngilizce büyük harf
+
+        if (isimInput.length < 2) { alert("Lütfen geçerli bir isim girin!"); return; }
+
+        db.ref('careerScores').once('value', (snap) => {
+            let data = snap.val();
+            let nameConflict = false;
+
+            if (data) {
+                // İsim Filtresi: Tam eşleşme veya kapsama kontrolü (ALI varsa MALIK olmaz)
+                Object.keys(data).forEach(existingName => {
+                    if (existingName === isimInput || existingName.includes(isimInput) || isimInput.includes(existingName)) {
+                        nameConflict = true;
+                        currentUser = existingName; // Mevcut kullanıcıyı tespit et
+                    }
+                });
+            }
+
+            if (nameConflict) {
+                // Mevcut oyuncunun kariyer puanını çek
+                userCareerPuan = data[currentUser] || 0;
+                girisYap();
+            } else {
+                // Tamamen yeni oyuncu
+                currentUser = isimInput;
+                userCareerPuan = 0;
+                db.ref('careerScores/' + currentUser).set(0);
+                girisYap();
+            }
+        });
+    }
+
+    function girisYap() {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('userTag').innerText = currentUser + " - KARİYER: " + userCareerPuan;
+        db.ref('careerScores').orderByValue().limitToLast(5).on('value', snap => {
+            worldScores = [];
+            snap.forEach(c => { worldScores.unshift({ isim: c.key, puan: c.val() }); });
+        });
+    }
 
     function sesCal(t) {
         if(audioCtx.state === 'suspended') audioCtx.resume();
@@ -115,7 +166,7 @@
         else { o.type='triangle'; g.gain.linearRampToValueAtTime(0, audioCtx.currentTime+0.1); o.start(); o.stop(audioCtx.currentTime+0.1); }
     }
 
-    function kartCek() { if(isAnim) return; const m = Object.keys(aktif).filter(s => aktif[s]); if(!m.length) return; isAnim=true; sesCal('v'); const s = m[Math.floor(Math.random()*m.length)], d = Math.floor(Math.random()*13)+1; anim(s, d); }
+    function kartCek() { if(isAnim || !currentUser) return; const m = Object.keys(aktif).filter(s => aktif[s]); if(!m.length) return; isAnim=true; sesCal('v'); const s = m[Math.floor(Math.random()*m.length)], d = Math.floor(Math.random()*13)+1; anim(s, d); }
     
     function anim(s, d) {
         const ga = document.getElementById('gameArea'), card = document.createElement('div'), dr = document.getElementById('deck').getBoundingClientRect(), ar = ga.getBoundingClientRect();
@@ -153,27 +204,21 @@
 
     function bitti() { 
         let bonus = 0; if(tPuan >= 50) { let dilim = Math.min(Math.floor(tPuan / 50), 10); bonus = 10 * Math.pow(2, dilim - 1); }
-        tPuan += bonus; document.getElementById('toplam').innerText = 'TOPLAM: ' + tPuan;
-        
-        const minWorld = worldScores.length < 5 ? 0 : worldScores[4].puan;
-        if (tPuan > minWorld && tPuan > 0) {
-            setTimeout(() => {
-                const isim = prompt("TEBRİKLER! DÜNYA REKORLARINA GİRDİNİZ.\nLütfen isminizi yazın:", "Misafir");
-                if (isim) db.ref('worldScores').push({ isim: isim, puan: tPuan });
-            }, 500);
-        }
+        tPuan += bonus; 
+        document.getElementById('toplam').innerText = 'FİNAL: ' + tPuan;
 
-        rekorKaydet(tPuan); tabloGoster(); 
+        // Kariyer Puanını Güncelle
+        userCareerPuan += tPuan;
+        db.ref('careerScores/' + currentUser).set(userCareerPuan);
+        document.getElementById('userTag').innerText = currentUser + " - KARİYER: " + userCareerPuan;
+
+        tabloGoster(); 
         document.getElementById('deck').style.visibility='hidden'; document.getElementById('restartBtn').style.display='block';
     }
     
-    function rekorKaydet(p) { localRecords.push(p); localRecords.sort((a,b)=>b-a); localRecords = localRecords.slice(0, 3); localStorage.setItem('bj4x4_rekorlar', JSON.stringify(localRecords)); }
-    
     function tabloGoster() { 
         const gList = document.getElementById('globalScores');
-        gList.innerHTML = worldScores.map((item, i) => `<div class="rank-item"><span>${i+1}. ${item.isim || '??'}</span><span>${item.puan}</span></div>`).join('');
-        const lList = document.getElementById('scoresList');
-        lList.innerHTML = localRecords.map((s, i) => `<div class="rank-item"><span>${i+1}. Rekor</span><span>${s}</span></div>`).join('');
+        gList.innerHTML = worldScores.map((item, i) => `<div class="rank-item"><span>${i+1}. ${item.isim}</span><span>${item.puan}</span></div>`).join('');
         document.getElementById('scoreBoard').style.display = 'block'; 
         document.getElementById('pattern').style.display = 'none';
     }
