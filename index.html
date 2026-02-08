@@ -43,28 +43,27 @@
     </style>
 
 <style>
-    .menu-don-btn {
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        width: 65px;
-        height: 30px;
-        background-color: #2ecc71; /* Yeşil taban */
-        border: 2px solid #000000; /* Siyah sınır */
-        color: black;
-        font-weight: bold;
-        font-size: 12px;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 9999;
-        text-decoration: none;
-    }
+  .menu-don-btn {
+    position: absolute;
+    top: 55px;  /* Saatin altına inmesi için 15'ten 55'e çıkardık */
+    left: 20px; /* Kenardan biraz daha açtık */
+    width: 60px;
+    height: 28px;
+    background-color: #2ecc71;
+    border: 2px solid #000000;
+    color: black;
+    font-weight: bold;
+    font-size: 11px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10000; /* En üstte kalması garantilendi */
+    text-decoration: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
 </style>
-
-<a href="index.html" class="menu-don-btn">MENÜ</a>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -79,6 +78,9 @@
 </div>
 
 <div class="phone" id="gameArea">
+
+<a href="index.html" class="menu-don-btn">MENÜ</a>
+    
     <div class="header-area">
         <div class="deck-box" id="deck" onclick="kartCek()">?</div>
         <button class="restart-btn" id="restartBtn" onclick="sifirlaHemen()">TEKRAR<br>DAĞIT</button>
@@ -258,4 +260,5 @@
 </script>
 </body>
 </html>
+
 
