@@ -41,6 +41,31 @@
         .signature { margin-top: auto; margin-bottom: 15px; color: #fff; font-size: 16px; font-weight: 900; text-shadow: 2px 2px 4px #000; }
         .rank-item { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px; }
     </style>
+
+<style>
+    .menu-don-btn {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 65px;
+        height: 30px;
+        background-color: #2ecc71; /* Yeşil taban */
+        border: 2px solid #000000; /* Siyah sınır */
+        color: black;
+        font-weight: bold;
+        font-size: 12px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 9999;
+        text-decoration: none;
+    }
+</style>
+
+<a href="index.html" class="menu-don-btn">MENÜ</a>
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
@@ -233,3 +258,4 @@
 </script>
 </body>
 </html>
+
